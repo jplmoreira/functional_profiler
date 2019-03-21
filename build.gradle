@@ -1,0 +1,22 @@
+plugins {
+    // Apply the java plugin to add support for Java
+    id 'java'
+
+    // Apply the application plugin to add support for building an application
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.javassist:javassist:3.24.1-GA'
+}
+
+configurations {
+    jar.archiveName = 'functionalProfiler'
+}
+
+// Define the main class for the application
+mainClassName = 'ist.meic.pa.FunctionalProfiler.WithFunctionalProfiler'
