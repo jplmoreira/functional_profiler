@@ -10,10 +10,10 @@ import javassist.expr.FieldAccess;
 import javassist.expr.ExprEditor;
 
 public class ProfilerTranslator implements Translator {
-    private final String writerTemplate = "ist.meic.pa.FunctionalProfiler.WithFunctionalProfiler.incrementWriter(\"%s\");" +
+    private final String writerTemplate = "ist.meic.pa.FunctionalProfiler.ProfilerMaps.incrementWriter(\"%s\");" +
                                           "$proceed($$);";
 
-    private final String readerTemplate = "ist.meic.pa.FunctionalProfiler.WithFunctionalProfiler.incrementReader(\"%s\");" +
+    private final String readerTemplate = "ist.meic.pa.FunctionalProfiler.ProfilerMaps.incrementReader(\"%s\");" +
                                           "$_ = $proceed();";
 
     public void start(ClassPool pool) throws NotFoundException, CannotCompileException {
@@ -32,7 +32,7 @@ public class ProfilerTranslator implements Translator {
                         throws CannotCompileException {
                         String className = fa.getClassName();
                         if (!className.equals("java.lang.System") &&
-                            !className.equals("ist.meic.pa.FunctionalProfiler.WithFunctionalProfiler")) {
+                            !className.equals("ist.meic.pa.FunctionalProfiler.ProfilerMaps")) {
                             if (fa.isWriter()) {
                                 fa.replace(String.format(writerTemplate, className));
                             } else if (fa.isReader()) {

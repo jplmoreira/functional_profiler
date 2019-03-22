@@ -7,14 +7,8 @@ import javassist.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 public class WithFunctionalProfiler {
-    private static Map<String, Integer> writers = new HashMap<>();
-    private static Map<String, Integer> readers = new HashMap<>();
-
     
     public static void main(String[] args) {
         try {
@@ -30,6 +24,8 @@ public class WithFunctionalProfiler {
             classLoader.addTranslator(pool, translator);
             String[] restArgs = new String[args.length - 1];
             System.arraycopy(args, 1, restArgs, 0, restArgs.length);
+            CtMethod main = pool.getCtClass(args[0]).getDeclaredMethod("main");
+            main.insertAfter("ist.meic.pa.FunctionalProfiler.ProfilerMaps.printStatus();");
             classLoader.run(args[0], restArgs);
         }
         catch (InvocationTargetException | IllegalAccessException | NotFoundException | CannotCompileException e) {
@@ -38,34 +34,5 @@ public class WithFunctionalProfiler {
             System.out.println("Error running main function in " + args[0]);
             e.printStackTrace();
         }
-
-        System.out.println("Total reads: " + readers.size() + " Total writes: " + writers.size());
-        Set<String> keys = writers.keySet();
-        keys.addAll(readers.keySet());
-        for (String className : keys) {
-            String result = "class " + className + " -> reads: ";
-            result += (readers.containsKey(className)) ? readers.get(className) : 0;
-            result += " writes: ";
-            result += (writers.containsKey(className)) ? writers.get(className) : 0;
-            System.out.println(result);
-        }
-    }
-
-    public static void incrementWriter(String className) {
-        if(writers.containsKey(className)){
-           writers.put(className, writers.get(className) + 1);
-        } else
-           writers.put(className, 1);
-
-        System.out.println("Increment writer: " + className + " to " + writers.get(className));
-    }
-
-    public static void incrementReader(String className) {
-        if(readers.containsKey(className)){
-           readers.put(className, readers.get(className) + 1);
-        } else
-           readers.put(className, 1);
-
-        System.out.println("Increment reader: " + className + " to " + readers.get(className));
     }
 }
