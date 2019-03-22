@@ -3,12 +3,29 @@
  */
 package ist.meic.pa.FunctionalProfiler;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Hashtable;
+
 public class WithFunctionalProfiler {
+    public Hashtable<String, Integer> writers = new Hashtable<String, Integer>();
     public String getGreeting() {
         return "Hello world.";
     }
 
     public static void main(String[] args) {
-        System.out.println(new WithFunctionalProfiler().getGreeting());
+        try {
+
+            System.out.println(args[0]);
+
+            Class<?> rtClass = Class.forName(args[0]);
+            Method main = rtClass.getMethod("main", args.getClass());
+            String[] restArgs = new String[args.length - 2];
+            System.arraycopy(args, 2, restArgs, 0, restArgs.length);
+            main.invoke(null, new Object[] { restArgs });
+        }
+        catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }
