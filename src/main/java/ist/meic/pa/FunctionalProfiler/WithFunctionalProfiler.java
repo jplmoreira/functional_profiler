@@ -3,29 +3,69 @@
  */
 package ist.meic.pa.FunctionalProfiler;
 
+import javassist.*;
+import javassist.expr.ExprEditor;
+import javassist.expr.FieldAccess;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class WithFunctionalProfiler {
-    public Hashtable<String, Integer> writers = new Hashtable<String, Integer>();
+    private static Map<String, Integer> writers = new HashMap<>();
     public String getGreeting() {
         return "Hello world.";
     }
 
     public static void main(String[] args) {
         try {
+            if(args.length != 1){
+                System.err.println("Usage: java WithFunctionalProfiler <Class>");
+                System.exit(1);
+            }
 
             System.out.println(args[0]);
+            ClassPool pool = ClassPool.getDefault();
 
-            Class<?> rtClass = Class.forName(args[0]);
+            CtClass fCounter = pool.get("ist.meic.pa.FunctionalProfiler.ImperativeCounter");
+            for (CtMethod ctMethod: fCounter.getDeclaredMethods()){
+                System.out.println("for");
+                ctMethod.instrument(new ExprEditor() {
+                    public void edit(FieldAccess fa)
+                        throws CannotCompileException {
+                        if (fa.isWriter()) {
+                            System.out.println("fa is Writer");
+
+                            StringBuilder code = new StringBuilder();
+                            code.append("{");
+                            code.append("System.out.println(\"faz cenas puta \");");
+                            code.append("}");
+                            fa.replace(code.toString());
+
+                        }
+                    }
+                });
+            }
+
+            CtClass ctClass = pool.get(args[0]);
+            Class<?> rtClass = ctClass.toClass();
             Method main = rtClass.getMethod("main", args.getClass());
-            String[] restArgs = new String[args.length - 2];
-            System.arraycopy(args, 2, restArgs, 0, restArgs.length);
-            main.invoke(null, new Object[] { restArgs });
+            main.invoke(null, new Object[] { null });
+
         }
-        catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException e) {
+        catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | NotFoundException | CannotCompileException e) {
             e.printStackTrace();
         }
+    }
+
+    static void incrementWriter(String className) {
+        if(writers.containsKey(className)){
+           writers.put(className, writers.get(className) + 1);
+        }
+        else
+           writers.put(className, 1);
+
+        System.out.println("Increment writer: " + className + " to " + writers.get(className));
     }
 }
