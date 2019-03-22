@@ -14,7 +14,6 @@ public class ImperativeCounter implements Counter {
 
     @Override
     public Counter advance() {
-        ist.meic.pa.FunctionalProfiler.WithFunctionalProfiler.incrementWriter("hi");
         i = i + 1;
         return this;
     }

@@ -4,20 +4,18 @@
 package ist.meic.pa.FunctionalProfiler;
 
 import javassist.*;
-import javassist.expr.ExprEditor;
-import javassist.expr.FieldAccess;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class WithFunctionalProfiler {
     private static Map<String, Integer> writers = new HashMap<>();
-    public String getGreeting() {
-        return "Hello world.";
-    }
+    private static Map<String, Integer> readers = new HashMap<>();
 
+    
     public static void main(String[] args) {
         try {
             if(args.length != 1){
@@ -26,46 +24,48 @@ public class WithFunctionalProfiler {
             }
 
             System.out.println(args[0]);
+            Translator translator = new ProfilerTranslator();
             ClassPool pool = ClassPool.getDefault();
-
-            CtClass fCounter = pool.get("ist.meic.pa.FunctionalProfiler.ImperativeCounter");
-            for (CtMethod ctMethod: fCounter.getDeclaredMethods()){
-                System.out.println("for");
-                ctMethod.instrument(new ExprEditor() {
-                    public void edit(FieldAccess fa)
-                        throws CannotCompileException {
-                        if (fa.isWriter()) {
-                            System.out.println("fa is Writer");
-
-                            StringBuilder code = new StringBuilder();
-                            code.append("{");
-                            code.append("System.out.println(\"faz cenas puta \");");
-                            code.append("}");
-                            fa.replace(code.toString());
-
-                        }
-                    }
-                });
-            }
-
-            CtClass ctClass = pool.get(args[0]);
-            Class<?> rtClass = ctClass.toClass();
-            Method main = rtClass.getMethod("main", args.getClass());
-            main.invoke(null, new Object[] { null });
-
+            Loader classLoader = new Loader();
+            classLoader.addTranslator(pool, translator);
+            String[] restArgs = new String[args.length - 1];
+            System.arraycopy(args, 1, restArgs, 0, restArgs.length);
+            classLoader.run(args[0], restArgs);
         }
-        catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | NotFoundException | CannotCompileException e) {
+        catch (InvocationTargetException | IllegalAccessException | NotFoundException | CannotCompileException e) {
             e.printStackTrace();
+        } catch (Throwable e) {
+            System.out.println("Error running main function in " + args[0]);
+            e.printStackTrace();
+        }
+
+        System.out.println("Total reads: " + readers.size() + " Total writes: " + writers.size());
+        Set<String> keys = writers.keySet();
+        keys.addAll(readers.keySet());
+        for (String className : keys) {
+            String result = "class " + className + " -> reads: ";
+            result += (readers.containsKey(className)) ? readers.get(className) : 0;
+            result += " writes: ";
+            result += (writers.containsKey(className)) ? writers.get(className) : 0;
+            System.out.println(result);
         }
     }
 
-    static void incrementWriter(String className) {
+    public static void incrementWriter(String className) {
         if(writers.containsKey(className)){
            writers.put(className, writers.get(className) + 1);
-        }
-        else
+        } else
            writers.put(className, 1);
 
         System.out.println("Increment writer: " + className + " to " + writers.get(className));
+    }
+
+    public static void incrementReader(String className) {
+        if(readers.containsKey(className)){
+           readers.put(className, readers.get(className) + 1);
+        } else
+           readers.put(className, 1);
+
+        System.out.println("Increment reader: " + className + " to " + readers.get(className));
     }
 }
