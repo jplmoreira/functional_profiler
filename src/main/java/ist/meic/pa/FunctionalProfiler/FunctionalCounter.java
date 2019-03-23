@@ -1,7 +1,7 @@
 package ist.meic.pa.FunctionalProfiler;
 
 public class FunctionalCounter implements Counter {
-   private int i;
+    public int i;
 
     public FunctionalCounter(int start) {
         i = start;

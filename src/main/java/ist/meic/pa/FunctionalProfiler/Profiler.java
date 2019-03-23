@@ -1,11 +1,8 @@
 package ist.meic.pa.FunctionalProfiler;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-public class ProfilerMaps {
+public class Profiler {
     private static Map<String, Integer> writers = new HashMap<>();
     private static Map<String, Integer> readers = new HashMap<>();
 
@@ -24,17 +21,18 @@ public class ProfilerMaps {
     }
 
     public static void printStatus() {
-        Set<String> keys = new HashSet<String>();
+        Set<String> keys = new TreeSet<>();
         keys.addAll(writers.keySet());
         keys.addAll(readers.keySet());
+
         int totalReads = readers.values().stream().mapToInt(Integer::intValue).sum();
         int totalWrites = writers.values().stream().mapToInt(Integer::intValue).sum();
         System.out.println("Total reads: " + totalReads + " Total writes: " + totalWrites);
         for (String className : keys) {
             String result = "class " + className + " -> reads: ";
-            result += (readers.containsKey(className)) ? readers.get(className) : 0;
+            result += readers.getOrDefault(className, 0);
             result += " writes: ";
-            result += (writers.containsKey(className)) ? writers.get(className) : 0;
+            result += writers.getOrDefault(className, 0);
             System.out.println(result);
         }
     }
