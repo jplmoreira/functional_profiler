@@ -4,6 +4,8 @@ plugins {
 
     // Apply the application plugin to add support for building an application
     id 'application'
+
+    id 'idea'
 }
 
 repositories {
@@ -22,7 +24,7 @@ configurations {
 mainClassName = 'ist.meic.pa.FunctionalProfiler.WithFunctionalProfiler'
 
 run {
-    args = ["ist.meic.pa.FunctionalProfiler.Test1"]
+    args = ["tests.Tests", "test18"]
 
     if (project.hasProperty("appArgs")) {
         args = Eval.me(appArgs)

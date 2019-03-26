@@ -1,4 +1,4 @@
-package ist.meic.pa.FunctionalProfiler;
+package tests.domain;
 
 public class FunctionalCounter implements Counter {
     public int i;

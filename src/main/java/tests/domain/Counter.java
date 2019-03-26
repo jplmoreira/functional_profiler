@@ -1,4 +1,4 @@
-package ist.meic.pa.FunctionalProfiler;
+package tests.domain;
 
 public interface Counter {
     public int value();

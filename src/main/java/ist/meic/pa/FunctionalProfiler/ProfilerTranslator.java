@@ -8,6 +8,10 @@ public class ProfilerTranslator implements Translator {
     private final String writerTemplate = "ist.meic.pa.FunctionalProfiler.Profiler.incrementWriter(\"%s\");" +
                                           "$proceed($$);";
 
+    private final String constructorWriterTemplate = "if(this != $0)" +
+                                                     "ist.meic.pa.FunctionalProfiler.Profiler.incrementWriter(\"%s\");" +
+                                                     "$proceed($$);";
+
     private final String readerTemplate = "ist.meic.pa.FunctionalProfiler.Profiler.incrementReader(\"%s\");" +
                                           "$_ = $proceed();";
 
@@ -25,16 +29,17 @@ public class ProfilerTranslator implements Translator {
             }
         };
 
-    private ExprEditor constEditor = new ExprEditor() {
+    private ExprEditor constructorMethod = new ExprEditor() {
             public void edit(FieldAccess fa) throws CannotCompileException {
                 String className = fa.getClassName();
-                boolean isInitialization = className.equals(fa.where().getDeclaringClass().getName());
+
+                //boolean isInitialization = className.equals(fa.where().getDeclaringClass().getName());
                 if (!className.equals("java.lang.System") &&
                     !className.equals("ist.meic.pa.FunctionalProfiler.Profiler")) {
-                    if (fa.isWriter() && !isInitialization) {
-                        fa.replace(String.format(writerTemplate, className));
+                    if (fa.isWriter()) {
+                        fa.replace(String.format(constructorWriterTemplate, className));
                     } else if (fa.isReader()) {
-                        fa.replace(String.format(readerTemplate, className));
+                        fa.replace(String.format(readerTemplate , className));
                     }
                 }
             }
@@ -54,6 +59,6 @@ public class ProfilerTranslator implements Translator {
             ctMethod.instrument(methodEditor);
 
         for (CtConstructor ctConstructor: ctClass.getDeclaredConstructors())
-            ctConstructor.instrument(constEditor);
+            ctConstructor.instrument(constructorMethod);
     }
 }

@@ -1,6 +1,10 @@
-package ist.meic.pa.FunctionalProfiler;
+package tests;
 
-public class Test1 {
+import tests.domain.Counter;
+import tests.domain.FunctionalCounter;
+import tests.domain.ImperativeCounter;
+
+public class TestA {
     public static void test(Counter c1, Counter c2) {
         System.out.println(String.format("%s %s", c1.value(), c2.value()));
     }
