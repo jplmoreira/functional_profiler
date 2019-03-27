@@ -23,7 +23,7 @@ public class WithFunctionalProfiler {
             String[] restArgs = new String[args.length - 1];
             System.arraycopy(args, 1, restArgs, 0, restArgs.length);
             CtMethod main = pool.getCtClass(args[0]).getDeclaredMethod("main");
-            main.insertAfter("ist.meic.pa.FunctionalProfiler.Profiler.printStatus();");
+            main.insertAfter("ist.meic.pa.FunctionalProfilerExtended.Profiler.printStatus();");
             classLoader.run(args[0], restArgs);
         }
         catch (InvocationTargetException | IllegalAccessException | NotFoundException | CannotCompileException e) {

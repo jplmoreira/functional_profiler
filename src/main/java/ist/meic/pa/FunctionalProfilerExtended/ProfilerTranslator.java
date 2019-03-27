@@ -19,7 +19,7 @@ public class ProfilerTranslator implements Translator {
             public void edit(FieldAccess fa) throws CannotCompileException {
                 String className = fa.getClassName();
                 if (!className.equals("java.lang.System") &&
-                    !className.equals("ist.meic.pa.FunctionalProfiler.Profiler")) {
+                    !className.equals("ist.meic.pa.FunctionalProfilerExtended.Profiler")) {
                     if (fa.isWriter()) {
                         fa.replace(String.format(writerTemplate, className));
                     } else if (fa.isReader()) {
@@ -29,12 +29,12 @@ public class ProfilerTranslator implements Translator {
             }
         };
 
-    private ExprEditor constructorMethod = new ExprEditor() {
+    private ExprEditor constructorEditor = new ExprEditor() {
             public void edit(FieldAccess fa) throws CannotCompileException {
                 String className = fa.getClassName();
 
                 if (!className.equals("java.lang.System") &&
-                    !className.equals("ist.meic.pa.FunctionalProfiler.Profiler")) {
+                    !className.equals("ist.meic.pa.FunctionalProfilerExtended.Profiler")) {
                     if (fa.isWriter()) {
                         fa.replace(String.format(constructorWriterTemplate, className));
                     } else if (fa.isReader()) {
@@ -58,6 +58,6 @@ public class ProfilerTranslator implements Translator {
             ctMethod.instrument(methodEditor);
 
         for (CtConstructor ctConstructor: ctClass.getDeclaredConstructors())
-            ctConstructor.instrument(constructorMethod);
+            ctConstructor.instrument(constructorEditor);
     }
 }

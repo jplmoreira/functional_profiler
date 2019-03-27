@@ -29,7 +29,7 @@ public class ProfilerTranslator implements Translator {
             }
         };
 
-    private ExprEditor constructorMethod = new ExprEditor() {
+    private ExprEditor constructorEditor = new ExprEditor() {
             public void edit(FieldAccess fa) throws CannotCompileException {
                 String className = fa.getClassName();
 
@@ -59,6 +59,6 @@ public class ProfilerTranslator implements Translator {
             ctMethod.instrument(methodEditor);
 
         for (CtConstructor ctConstructor: ctClass.getDeclaredConstructors())
-            ctConstructor.instrument(constructorMethod);
+            ctConstructor.instrument(constructorEditor);
     }
 }
