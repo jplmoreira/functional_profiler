@@ -3,7 +3,6 @@
  */
 package ist.meic.pa.FunctionalProfilerExtended;
 
-import ist.meic.pa.FunctionalProfiler.ProfilerTranslator;
 import javassist.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -12,12 +11,11 @@ public class WithFunctionalProfiler {
     
     public static void main(String[] args) {
         try {
-            if(args.length != 1){
+            if(args.length < 1){
                 System.err.println("Usage: java WithFunctionalProfiler <Class>");
                 System.exit(1);
             }
 
-            System.out.println(args[0]);
             Translator translator = new ProfilerTranslator();
             ClassPool pool = ClassPool.getDefault();
             Loader classLoader = new Loader();

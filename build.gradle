@@ -21,7 +21,7 @@ configurations {
 }
 
 // Define the main class for the application
-mainClassName = 'ist.meic.pa.FunctionalProfiler.WithFunctionalProfiler'
+mainClassName = 'ist.meic.pa.FunctionalProfilerExtended.WithFunctionalProfiler'
 
 run {
     args = ["tests.Tests", "test18"]
