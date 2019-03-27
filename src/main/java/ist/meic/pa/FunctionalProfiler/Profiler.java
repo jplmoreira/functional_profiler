@@ -1,15 +1,16 @@
 package ist.meic.pa.FunctionalProfiler;
 
+
 import java.util.*;
 
 public class Profiler {
-    private static Map<String, Integer> writers = new HashMap<>();
-    private static Map<String, Integer> readers = new HashMap<>();
+    private static HashMap<String, Integer> writers = new HashMap<>();
+    private static HashMap<String, Integer> readers = new HashMap<>();
 
     public static void incrementWriter(String className) {
-        if(writers.containsKey(className)){
-           writers.put(className, writers.get(className) + 1);
-        } else
+        if(writers.containsKey(className))
+            writers.put(className, writers.get(className) + 1);
+        else
            writers.put(className, 1);
     }
 

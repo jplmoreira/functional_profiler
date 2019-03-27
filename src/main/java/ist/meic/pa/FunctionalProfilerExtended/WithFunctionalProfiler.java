@@ -12,7 +12,7 @@ public class WithFunctionalProfiler {
     public static void main(String[] args) {
         try {
             if(args.length < 1){
-                System.err.println("Usage: java WithFunctionalProfiler <Class>");
+                System.err.println("Usage: java WithFunctionalProfiler <Class> <Arg1 ... Argn>");
                 System.exit(1);
             }
 

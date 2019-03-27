@@ -5,25 +5,27 @@ import javassist.expr.ExprEditor;
 import javassist.expr.FieldAccess;
 
 public class ProfilerTranslator implements Translator {
-    private final String writerTemplate = "ist.meic.pa.FunctionalProfilerExtended.Profiler.incrementWriter(\"%s\");" +
+    private final String writerTemplate = "ist.meic.pa.FunctionalProfilerExtended.Profiler.incrementWriter(\"%s\",\"%s\");" +
                                           "$proceed($$);";
 
     private final String constructorWriterTemplate = "if(this != $0)" +
-                                                     "ist.meic.pa.FunctionalProfilerExtended.Profiler.incrementWriter(\"%s\");" +
+                                                     "ist.meic.pa.FunctionalProfilerExtended.Profiler.incrementWriter(\"%s\",\"%s\");" +
                                                      "$proceed($$);";
 
-    private final String readerTemplate = "ist.meic.pa.FunctionalProfilerExtended.Profiler.incrementReader(\"%s\");" +
+    private final String readerTemplate = "ist.meic.pa.FunctionalProfilerExtended.Profiler.incrementReader(\"%s\",\"%s\");" +
                                           "$_ = $proceed();";
 
     private ExprEditor methodEditor = new ExprEditor() {
             public void edit(FieldAccess fa) throws CannotCompileException {
                 String className = fa.getClassName();
+                String methodName = fa.where().getLongName();
                 if (!className.equals("java.lang.System") &&
-                    !className.equals("ist.meic.pa.FunctionalProfilerExtended.Profiler")) {
+                    !className.equals("ist.meic.pa.FunctionalProfilerExtended.Profiler")&&
+                    !className.equals("ist.meic.pa.FunctionalProfilerExtended.ProfilerData")) {
                     if (fa.isWriter()) {
-                        fa.replace(String.format(writerTemplate, className));
+                        fa.replace(String.format(writerTemplate, className, methodName));
                     } else if (fa.isReader()) {
-                        fa.replace(String.format(readerTemplate, className));
+                        fa.replace(String.format(readerTemplate, className, methodName));
                     }
                 }
             }
@@ -32,13 +34,14 @@ public class ProfilerTranslator implements Translator {
     private ExprEditor constructorEditor = new ExprEditor() {
             public void edit(FieldAccess fa) throws CannotCompileException {
                 String className = fa.getClassName();
-
+                String methodName = fa.where().getLongName();
                 if (!className.equals("java.lang.System") &&
-                    !className.equals("ist.meic.pa.FunctionalProfilerExtended.Profiler")) {
+                    !className.equals("ist.meic.pa.FunctionalProfilerExtended.Profiler") &&
+                    !className.equals("ist.meic.pa.FunctionalProfilerExtended.ProfilerData")) {
                     if (fa.isWriter()) {
-                        fa.replace(String.format(constructorWriterTemplate, className));
+                        fa.replace(String.format(constructorWriterTemplate, className, methodName));
                     } else if (fa.isReader()) {
-                        fa.replace(String.format(readerTemplate , className));
+                        fa.replace(String.format(readerTemplate , className, methodName));
                     }
                 }
             }
