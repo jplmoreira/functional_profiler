@@ -116,7 +116,7 @@ public class TestA {
 	static void test18() {
 		for (int i = 1; i < 18; i++) {
 			try {
-				Method m = Tests.class.getDeclaredMethod("test" + i);
+				Method m = TestA.class.getDeclaredMethod("test" + i);
 				m.invoke(null);	
 			} catch(InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
 				// Should not happen

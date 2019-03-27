@@ -21,7 +21,7 @@ public class ProfilerTranslator implements Translator {
                     String methodName = fa.where().getLongName();
                     try {
                         if (fa.where().getAnnotation(LimitScope.class) != null) {
-                            System.out.println(">>> Skipping method (LimitScope)");
+                            System.out.println(">>> Skipping method (LimitScope): " + fa.where().getName());
                             return; // Don't replace if method has annotation
                         }
                     } catch (ClassNotFoundException e) {
@@ -44,8 +44,10 @@ public class ProfilerTranslator implements Translator {
                 String className = fa.getClassName();
                 String methodName = fa.where().getLongName();
                 try {
-                    if (fa.where().getAnnotation(LimitScope.class) != null)
+                    if (fa.where().getAnnotation(LimitScope.class) != null) {
+                        System.out.println(">>> Skipping constructor (LimitScope): " + fa.where().getName());
                         return; // Don't replace if constructor has annotation
+                    }
                 } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                 }
