@@ -16,28 +16,44 @@ public class ProfilerTranslator implements Translator {
                                           "$_ = $proceed();";
 
     private ExprEditor methodEditor = new ExprEditor() {
-            public void edit(FieldAccess fa) throws CannotCompileException {
-                String className = fa.getClassName();
-                String methodName = fa.where().getLongName();
-                if (!className.equals("java.lang.System") &&
-                    !className.equals("ist.meic.pa.FunctionalProfilerExtended.Profiler")&&
-                    !className.equals("ist.meic.pa.FunctionalProfilerExtended.ProfilerData")) {
-                    if (fa.isWriter()) {
-                        fa.replace(String.format(writerTemplate, className, methodName));
-                    } else if (fa.isReader()) {
-                        fa.replace(String.format(readerTemplate, className, methodName));
+                public void edit(FieldAccess fa) throws CannotCompileException {
+                    String className = fa.getClassName();
+                    String methodName = fa.where().getLongName();
+                    try {
+                        if (fa.where().getAnnotation(LimitScope.class) != null) {
+                            System.out.println(">>> Skipping method (LimitScope)");
+                            return; // Don't replace if method has annotation
+                        }
+                    } catch (ClassNotFoundException e) {
+                            e.printStackTrace();
+                    }
+                    if (!className.equals("java.lang.System") &&
+                        !className.equals("ist.meic.pa.FunctionalProfilerExtended.Profiler")&&
+                        !className.equals("ist.meic.pa.FunctionalProfilerExtended.ProfilerData")) {
+                        if (fa.isWriter()) {
+                            fa.replace(String.format(writerTemplate, className, methodName));
+                        } else if (fa.isReader()) {
+                            fa.replace(String.format(readerTemplate, className, methodName));
+                        }
                     }
                 }
-            }
         };
 
     private ExprEditor constructorEditor = new ExprEditor() {
             public void edit(FieldAccess fa) throws CannotCompileException {
                 String className = fa.getClassName();
                 String methodName = fa.where().getLongName();
+                try {
+                    if (fa.where().getAnnotation(LimitScope.class) != null)
+                        return; // Don't replace if constructor has annotation
+                } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                }
+
                 if (!className.equals("java.lang.System") &&
                     !className.equals("ist.meic.pa.FunctionalProfilerExtended.Profiler") &&
                     !className.equals("ist.meic.pa.FunctionalProfilerExtended.ProfilerData")) {
+
                     if (fa.isWriter()) {
                         fa.replace(String.format(constructorWriterTemplate, className, methodName));
                     } else if (fa.isReader()) {

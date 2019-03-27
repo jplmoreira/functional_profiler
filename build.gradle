@@ -24,7 +24,7 @@ configurations {
 mainClassName = 'ist.meic.pa.FunctionalProfilerExtended.WithFunctionalProfiler'
 
 run {
-    args = ["tests.Tests", "test18"]
+    args = ["tests.TestA", "test6"]
 
     if (project.hasProperty("appArgs")) {
         args = Eval.me(appArgs)
