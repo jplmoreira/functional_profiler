@@ -20,6 +20,13 @@ public class ProfilerTranslator implements Translator {
                 String className = fa.getClassName();
                 if (!className.equals("java.lang.System") &&
                     !className.equals("ist.meic.pa.FunctionalProfilerExtended.Profiler")) {
+                    try {
+                        if (fa.where().getAnnotation(LimitScope.class) != null) {
+                            return; // Dont replace if method has annotation
+                        }
+                    } catch (ClassNotFoundException | NotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
                     if (fa.isWriter()) {
                         fa.replace(String.format(writerTemplate, className));
                     } else if (fa.isReader()) {
@@ -32,9 +39,15 @@ public class ProfilerTranslator implements Translator {
     private ExprEditor constructorEditor = new ExprEditor() {
             public void edit(FieldAccess fa) throws CannotCompileException {
                 String className = fa.getClassName();
-
                 if (!className.equals("java.lang.System") &&
                     !className.equals("ist.meic.pa.FunctionalProfilerExtended.Profiler")) {
+                    try {
+                        if (fa.where().getAnnotation(LimitScope.class) != null) {
+                            return; // Dont replace if constructor has annotation
+                        }
+                    } catch (ClassNotFoundException | NotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
                     if (fa.isWriter()) {
                         fa.replace(String.format(constructorWriterTemplate, className));
                     } else if (fa.isReader()) {
