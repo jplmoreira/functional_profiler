@@ -3,9 +3,14 @@ package ist.meic.pa.FunctionalProfilerExtended;
 import java.util.*;
 
 public class Profiler {
-    private static HashMap<String, ProfilerData> writers = new HashMap<>();
+    private static HashMap<String, ProfilerData> writers = new HashMap<>();  // Counters for classes are static Hashmaps with class names as keys and the class ProfilerData as the value
     private static HashMap<String, ProfilerData> readers = new HashMap<>();
 
+    /*******************************************************
+     * This is a static method for incrementing the class writer counter.
+     * It verifies if the hashmap contains the key and, if it does,
+     * increment the counter otherwise puts the key on the map with value 1
+     *******************************************************/
     public static void incrementWriter(String className, String methodName) {
         if(writers.containsKey(className))
            writers.get(className).incrementAccess(methodName);
@@ -13,6 +18,11 @@ public class Profiler {
            writers.put(className, new ProfilerData(methodName));
     }
 
+    /*******************************************************
+     * This is a static method for incrementing the class reader counter.
+     * It verifies if the hashmap contains the key and, if it does,
+     * increment the counter otherwise puts the key on the map with value 1
+     *******************************************************/
     public static void incrementReader(String className, String methodName) {
         if(readers.containsKey(className))
             readers.get(className).incrementAccess(methodName);
@@ -20,30 +30,36 @@ public class Profiler {
            readers.put(className, new ProfilerData(methodName));
     }
 
+    /*******************************************************
+     * This is a static method for printing the final results of the writing and reading counters.
+     *******************************************************/
     public static void printStatus() {
-        Set<String> classKeys = new TreeSet<>();
-        classKeys.addAll(writers.keySet());
-        classKeys.addAll(readers.keySet());
+        Set<String> classKeys = new TreeSet<>();  // Create a tree set of strings to use the natural ordering
+        classKeys.addAll(writers.keySet());       // Add all the keys of both counters to the set 
+        classKeys.addAll(readers.keySet());       // Sets can only have unique values eliminating the problem of repeating keys on both counters
 
-        int totalReads = readers.values().stream().mapToInt(ProfilerData::getAccessCount).sum();
-        int totalWrites = writers.values().stream().mapToInt(ProfilerData::getAccessCount).sum();
-        System.out.println("Total reads: " + totalReads + " Total writes: " + totalWrites);
-        for (String className : classKeys) {
-            System.out.println(getClassProfile(className));
+        int totalReads = readers.values().stream().mapToInt(ProfilerData::getAccessCount).sum();  // Sum all the values of the reader counter map using 'map' method
+        int totalWrites = writers.values().stream().mapToInt(ProfilerData::getAccessCount).sum(); // Sum all the values of the writer counter map using 'map' method
+        System.out.println("Total reads: " + totalReads + " Total writes: " + totalWrites); // Print the total sums
+        for (String className : classKeys) {                                                // Cycle through all the keys (class names)
+            System.out.println(getClassProfile(className));                                 // Print the information about the class
 
-            Set<String> methodKeys = new TreeSet<>();
+            Set<String> methodKeys = new TreeSet<>();                                       // Create a tree set of method names of this class
             if(readers.containsKey(className))
                 methodKeys.addAll(readers.get(className).getMethodData().keySet());
             if(writers.containsKey(className))
                 methodKeys.addAll(writers.get(className).getMethodData().keySet());
-            for (String methodName : methodKeys){
-                System.out.println(getMethodProfile(className, methodName));
+            for (String methodName : methodKeys){                                           // Cycle through all of the methods
+                System.out.println(getMethodProfile(className, methodName));                // Print the information of each method
             }
 
             System.out.println();
         }
     }
 
+    /*******************************************************
+     * This is a method to print the number of reads and writes on a method of a class
+     *******************************************************/
     private static String getMethodProfile(String className, String methodName) {
         String result = "\treads: ";
         if(readers.containsKey(className))
@@ -59,6 +75,9 @@ public class Profiler {
         return result;
     }
 
+    /*******************************************************
+     * This is a method to print the number of reads and writes on a class
+     *******************************************************/
     private static String getClassProfile(String className) {
         String result = "class " + className + " -> reads: ";
         ProfilerData readerData = readers.get(className);
