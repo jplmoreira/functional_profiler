@@ -17,7 +17,7 @@ dependencies {
 }
 
 configurations {
-    jar.archiveName = 'functionalProfiler'
+    jar.archiveName = 'functionalProfiler.jar'
 }
 
 // Define the main class for the application

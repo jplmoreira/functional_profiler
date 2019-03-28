@@ -19,14 +19,14 @@ public class WithFunctionalProfiler {
             Translator translator = new ProfilerTranslator();
             ClassPool pool = ClassPool.getDefault();
             Loader classLoader = new Loader();
+            classLoader.delegateLoadingOf("ist.meic.pa.FunctionalProfiler.Profiler");
             classLoader.addTranslator(pool, translator);
             String[] restArgs = new String[args.length - 1];
             System.arraycopy(args, 1, restArgs, 0, restArgs.length);
-            CtMethod main = pool.getCtClass(args[0]).getDeclaredMethod("main");
-            main.insertAfter("ist.meic.pa.FunctionalProfiler.Profiler.printStatus();");
             classLoader.run(args[0], restArgs);
+            ist.meic.pa.FunctionalProfiler.Profiler.printStatus();
         }
-        catch (InvocationTargetException | IllegalAccessException | NotFoundException | CannotCompileException e) {
+        catch (NotFoundException | CannotCompileException e) {
             e.printStackTrace();
         } catch (Throwable e) {
             System.out.println("Error running main function in " + args[0]);

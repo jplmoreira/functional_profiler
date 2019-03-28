@@ -17,9 +17,8 @@ public class ProfilerTranslator implements Translator {
 
     private ExprEditor methodEditor = new ExprEditor() {
             public void edit(FieldAccess fa) throws CannotCompileException {
-                String className = fa.getClassName();
-                if (!className.equals("java.lang.System") &&
-                    !className.equals("ist.meic.pa.FunctionalProfiler.Profiler")) {
+                if (!fa.isStatic()) {
+                    String className = fa.getClassName();
                     if (fa.isWriter()) {
                         fa.replace(String.format(writerTemplate, className));
                     } else if (fa.isReader()) {
@@ -31,11 +30,8 @@ public class ProfilerTranslator implements Translator {
 
     private ExprEditor constructorEditor = new ExprEditor() {
             public void edit(FieldAccess fa) throws CannotCompileException {
-                String className = fa.getClassName();
-
-                //boolean isInitialization = className.equals(fa.where().getDeclaringClass().getName());
-                if (!className.equals("java.lang.System") &&
-                    !className.equals("ist.meic.pa.FunctionalProfiler.Profiler")) {
+                if (!fa.isStatic()) {
+                    String className = fa.getClassName();
                     if (fa.isWriter()) {
                         fa.replace(String.format(constructorWriterTemplate, className));
                     } else if (fa.isReader()) {
