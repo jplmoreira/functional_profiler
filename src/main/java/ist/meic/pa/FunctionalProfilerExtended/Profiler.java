@@ -34,22 +34,22 @@ public class Profiler {
      * This is a static method for printing the final results of the writing and reading counters.
      *******************************************************/
     public static void printStatus() {
-        Set<String> classKeys = new TreeSet<>();  // Create a tree set of strings to use the natural ordering
-        classKeys.addAll(writers.keySet());       // Add all the keys of both counters to the set 
-        classKeys.addAll(readers.keySet());       // Sets can only have unique values eliminating the problem of repeating keys on both counters
+        Set<String> classKeys = new TreeSet<>();
+        classKeys.addAll(writers.keySet());       // Add all the keys to an ordered set
+        classKeys.addAll(readers.keySet());
 
-        int totalReads = readers.values().stream().mapToInt(ProfilerData::getAccessCount).sum();  // Sum all the values of the reader counter map using 'map' method
-        int totalWrites = writers.values().stream().mapToInt(ProfilerData::getAccessCount).sum(); // Sum all the values of the writer counter map using 'map' method
+        int totalReads = readers.values().stream().mapToInt(ProfilerData::getAccessCount).sum();
+        int totalWrites = writers.values().stream().mapToInt(ProfilerData::getAccessCount).sum();
         System.out.println("Total reads: " + totalReads + " Total writes: " + totalWrites); // Print the total sums
-        for (String className : classKeys) {                                                // Cycle through all the keys (class names)
-            System.out.println(getClassProfile(className));                                 // Print the information about the class
+        for (String className : classKeys) {
+            System.out.println(getClassProfile(className));                                 // Print the information about each class
 
-            Set<String> methodKeys = new TreeSet<>();                                       // Create a tree set of method names of this class
+            Set<String> methodKeys = new TreeSet<>();
             if(readers.containsKey(className))
                 methodKeys.addAll(readers.get(className).getMethodData().keySet());
             if(writers.containsKey(className))
                 methodKeys.addAll(writers.get(className).getMethodData().keySet());
-            for (String methodName : methodKeys){                                           // Cycle through all of the methods
+            for (String methodName : methodKeys){                                           // Cycle through all of the methods of this class
                 System.out.println(getMethodProfile(className, methodName));                // Print the information of each method
             }
 

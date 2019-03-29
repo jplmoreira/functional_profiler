@@ -35,14 +35,14 @@ public class Profiler {
      * This is a static method for printing the final results of the writing and reading counters.
      *******************************************************/
     public static void printStatus() {
-        Set<String> keys = new TreeSet<>();  // Create a tree set of strings to use the natural ordering
+        Set<String> keys = new TreeSet<>();
         keys.addAll(writers.keySet());       // Add all the keys of both counters to the set 
-        keys.addAll(readers.keySet());       // Sets can only have unique values eliminating the problem of repeating keys on both counters
+        keys.addAll(readers.keySet());
 
-        int totalReads = readers.values().stream().mapToInt(Integer::intValue).sum();  // Sum all the values of the reader counter map using 'map' method
-        int totalWrites = writers.values().stream().mapToInt(Integer::intValue).sum(); // Sum all the values of the writer counter map using 'map' method
+        int totalReads = readers.values().stream().mapToInt(Integer::intValue).sum();
+        int totalWrites = writers.values().stream().mapToInt(Integer::intValue).sum();
         System.out.println("Total reads: " + totalReads + " Total writes: " + totalWrites); // Print the total sums
-        for (String className : keys) {                                                     // Cycle through all the keys (class names) and print the reads and writes of each one
+        for (String className : keys) {                                                     // And print the number of accesses of each class
             String result = "class " + className + " -> reads: ";
             result += readers.getOrDefault(className, 0);
             result += " writes: ";

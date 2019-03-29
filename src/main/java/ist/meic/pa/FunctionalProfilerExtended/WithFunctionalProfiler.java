@@ -16,12 +16,12 @@ public class WithFunctionalProfiler {
                 System.exit(1);
             }
 
-            Translator translator = new ProfilerTranslator();                                      // Instantiate the new translator [?]
-            ClassPool pool = ClassPool.getDefault();                                               // Get default class pool [?]
-            Loader classLoader = new Loader();                                                     // Instantiate the class loader [?]
+            Translator translator = new ProfilerTranslator();
+            ClassPool pool = ClassPool.getDefault();
+            Loader classLoader = new Loader();
             classLoader.delegateLoadingOf("ist.meic.pa.FunctionalProfilerExtended.Profiler");      // Delegate the loading of the Profiler and ProfilerData to the standard class loader
             classLoader.delegateLoadingOf("ist.meic.pa.FunctionalProfilerExtended.ProfilerData");
-            classLoader.addTranslator(pool, translator);                                           // Add translator and the pool to the class loader [?]
+            classLoader.addTranslator(pool, translator);
             String[] restArgs = new String[args.length - 1];
             System.arraycopy(args, 1, restArgs, 0, restArgs.length);
             classLoader.run(args[0], restArgs);                                                    // Run the main function on the received class

@@ -15,44 +15,56 @@ public class ProfilerTranslator implements Translator {
     private final String readerTemplate = "ist.meic.pa.FunctionalProfilerExtended.Profiler.incrementReader(\"%s\",\"%s\");" + // Increment the counter for the reads of the class
                                           "$_ = $proceed();";                                                                 // Proceed with the field read
 
+    /*******************************************************
+     * Adds code to the field accesses on a method, which increments
+     * the counter of reads or writes of a class, depending on the type
+     * of the field access. Ignores the method if it has the LimitScope annotation. 
+     *******************************************************/
     private ExprEditor methodEditor = new ExprEditor() {
             public void edit(FieldAccess fa) throws CannotCompileException {
-                if (!fa.isStatic()) {                                                     // If the field access is not static
+                if (!fa.isStatic()) {
                     String className = fa.getClassName();
                     String methodName = fa.where().getLongName();
                     try {
                         if (fa.where().getAnnotation(LimitScope.class) != null) {
-                            return;                                             // Don't replace if method has annotation
+                            return;
                         }
                     } catch (ClassNotFoundException e) {
                         throw new RuntimeException(e);
                     }
-                    if (fa.isWriter()) {                                                  // And if the field access is writer
-                        fa.replace(String.format(writerTemplate, className, methodName)); // Replace the field access with the writer template
-                    } else if (fa.isReader()) {                                           // Or if the field access is reader
-                        fa.replace(String.format(readerTemplate, className, methodName)); // Replace the field access with the reader template
+                    if (fa.isWriter()) {
+                        fa.replace(String.format(writerTemplate, className, methodName));
+                    } else if (fa.isReader()) {
+                        fa.replace(String.format(readerTemplate, className, methodName));
                     }
                         
                 }
             }
         };
 
+    /*******************************************************
+     * Adds code to the field accesses on a constructor, which increments
+     * the counter of reads or writes of a class, depending on the type
+     * of the field access. But it has to take into consideration if the
+     * field access an initialization. Ignores the constructor if it has
+     * the LimitScope annotation.
+     *******************************************************/
     private ExprEditor constructorEditor = new ExprEditor() {
             public void edit(FieldAccess fa) throws CannotCompileException {
-                if (!fa.isStatic()) {                                                                // If the field access is not static
+                if (!fa.isStatic()) {
                     String className = fa.getClassName();
                     String methodName = fa.where().getLongName();
                     try {
                         if (fa.where().getAnnotation(LimitScope.class) != null) {
-                            return;                                             // Don't replace if method has annotation
+                            return;
                         }
                     } catch (ClassNotFoundException e) {
                         throw new RuntimeException(e);
                     }
-                    if (fa.isWriter()) {                                                             // And if the field access is writer
-                        fa.replace(String.format(constructorWriterTemplate, className, methodName)); // Replace the field access with the writer template for constructors
-                    } else if (fa.isReader()) {                                                      // Or if the field access is reader
-                        fa.replace(String.format(readerTemplate , className, methodName));           // Replace the field access with the reader template
+                    if (fa.isWriter()) {
+                        fa.replace(String.format(constructorWriterTemplate, className, methodName));
+                    } else if (fa.isReader()) {
+                        fa.replace(String.format(readerTemplate , className, methodName));
                     }
                 }
             }
@@ -63,8 +75,8 @@ public class ProfilerTranslator implements Translator {
     }
 
     public void onLoad(ClassPool pool, String className) throws NotFoundException, CannotCompileException {
-        CtClass ctClass = pool.get(className);                                  // Get the compile time class
-        profileClass(ctClass);                                                  // Initiate the class profiling
+        CtClass ctClass = pool.get(className);
+        profileClass(ctClass);
     }
 
     private void profileClass(CtClass ctClass) throws CannotCompileException {
